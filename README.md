@@ -110,3 +110,7 @@ Below are the points which can be improved:
 -  There are frw places where I am getting false positives in my video those can be removed by using better thresholding.
 - Video processing takes 20 minutes to process 50 seconds video. That can be reduced by reducing number of features and by using `linear` kernel of `SVM`. 
 
+While implementing this project I faced major trouble while seecting proper kernel and then while selecting proper window sizes. For selecting proper window sizes I spent hours by trying different sizes and region to run those.
+
+I tried to use `Linear kernel` of `SVM` since it is faster as compared to `RBF kernel` but I was not able to find better combination so that I can get proper output, so I switched to `RBF kernel`. 
+
