@@ -106,11 +106,19 @@ Here's an example result showing the heatmap from a test images, the result of `
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Below are the points which can be improved:
--  There are frw places where I am getting false positives in my video those can be removed by using better thresholding.
-- Video processing takes 20 minutes to process 50 seconds video. That can be reduced by reducing number of features and by using `linear` kernel of `SVM`. 
+- First and foremost challenge I faced which features I should include which are not. For this I checked performance of both `Linear` and `RBF` kernel on different colorspaces, pixel_per_cell, histogram bin sizes, orientations and spatial_size. And finally setteled on `YUV` colorspace binnig features, `YUV` colorspace color histogram features, `YUV` colorspace `Y` channel HOG features, pixel_per_cell 16, histogram bin 32, orientation 7 and spatial_size 16 X 16. Where I was getting better accuracy for both the kernels compared to time taken by the kernel to train and output test image. This process took my a day of efforts to settel down on values.
+- Then the problem is that which kernel to use. I started with `Linear kernel of SVM` but I was getting lots of false positives and even at some places the car was not detecting even though I had accuracy of arround 98%. I tried varying values of `C` and `gamma` without any success. Then I switched to `RBF kernel` where I was getting better results than its counterpart.  I spent hours while figuring out `kernel`.
+- Now next callenge is to select window size and region to run those windows. For this I tried differnt combination of windows of different shapes and finally setteled on my better working combination by considering time and acuracy tradeoff.
+- Now the time to remove false positive and wobble effect. First of all to remove false positives I have taken threshold on heatmap. I tried with different values of threshold and settled on value 1 since for higher values of threshod I was loosing vehicle in some of the frames and for lower values of threshold I was getting more false positives. Then I have taken average of last 10 frames heat map to generate heatmap of current frame to counter wobble effect which inturn helped in removing some of the false positives. Then I placed restriction on boxes to be drawn to counter false positives.
 
-While implementing this project I faced major trouble while seecting proper kernel and then while selecting proper window sizes. For selecting proper window sizes I spent hours by trying different sizes and region to run those.
+- The pipeline can fail in following scenarios:
+    - The vehicle is smaller than 30 X 30 pixels in image.
+    - To identify Non car vehicle.
+    - In bad lightning conditions.
 
-I tried to use `Linear kernel` of `SVM` since it is faster as compared to `RBF kernel` but I was not able to find better combination so that I can get proper output, so I switched to `RBF kernel`. 
+- Below are the points which can be improved to make pipeline robust:
+    -  There are few places where I am getting false positives in my video those can be removed by optimizing features used for  training model with better configurations of hyper parameters.
+    - We can see in video even vehicles at opposite side of the road are getting detected. This can trick our vehicle so we can apply some kind of filter so that vehicls on opposite side of road cann't be detected.
+    - since I am taking average of last 10 frames we can see there is no wobble effect but sometimes bouding boxes are lagging behind. So that can be improved by reducing the number frames considered for taking average.
+    - Video processing takes 20 minutes to process 50 seconds video. That can be reduced by reducing number of features and by using `linear` kernel of `SVM`. 
 
